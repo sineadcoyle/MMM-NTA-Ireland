@@ -1,8 +1,8 @@
 {
-  "name": "mmm-template",
+  "name": "mmm-nta-ireland",
   "version": "1.0.0",
-  "description": "[Module description]",
-  "main": "MMM-Template.js",
+  "description": "Magic Mirror module customisable for real-time stop data for National Transport for Ireland information.",
+  "main": "MMM-NTA-Ireland.js",
   "scripts": {
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+[GitHub url].git"
+    "url": "git+https://github.com/sineadcoyle/MMM-NTA-Ireland.git"
   },
   "keywords": [
     "template"
@@ -18,9 +18,9 @@
   "author": "[Author]",
   "license": "MIT",
   "bugs": {
-    "url": "[GitHub url]/issues"
+    "url": "https://github.com/sineadcoyle/MMM-NTA-Ireland/issues"
   },
-  "homepage": "[GitHub url]#readme",
+  "homepage": "https://github.com/sineadcoyle/MMM-NTA-Ireland#readme",
   "devDependencies": {
     "@eslint/css": "^0.9.0",
     "@eslint/js": "^9.30.1",
