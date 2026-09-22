@@ -89,6 +89,8 @@ GTFS-Realtime trip update records do not always include a human-friendly destina
 
 ```bash
 npm install
+node --run test
+node --run test:unit
 node --run lint
 node --run lint:fix
 ```

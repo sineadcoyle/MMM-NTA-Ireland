@@ -1,19 +1,25 @@
 {
   "name": "mmm-nta-ireland",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Magic Mirror module customisable for real-time stop data for National Transport for Ireland information.",
   "main": "MMM-NTA-Ireland.js",
   "scripts": {
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "test": "node --run lint"
+    "test": "node --test test/*.test.js && node --run lint",
+    "test:unit": "node --test test/*.test.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sineadcoyle/MMM-NTA-Ireland.git"
   },
   "keywords": [
-    "template"
+    "magicmirror",
+    "magicmirror2",
+    "nta",
+    "ireland",
+    "gtfs-realtime",
+    "bus"
   ],
   "author": "[Author]",
   "license": "MIT",
