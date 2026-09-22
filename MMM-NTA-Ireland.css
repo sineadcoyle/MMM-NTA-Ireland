@@ -35,6 +35,17 @@
   white-space: nowrap;
 }
 
+.MMM-NTA-Ireland .nta-cancelled .nta-route,
+.MMM-NTA-Ireland .nta-cancelled .nta-destination,
+.MMM-NTA-Ireland .nta-cancelled .nta-time {
+  text-decoration: line-through;
+}
+
+.MMM-NTA-Ireland .nta-cancelled .nta-time {
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
 .MMM-NTA-Ireland .nta-error {
   color: #fff;
 }

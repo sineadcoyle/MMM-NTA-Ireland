@@ -14,6 +14,7 @@ Module.register("MMM-NTA-Ireland", {
     showRoute: true,
     showDestination: true,
     showDelay: true,
+    showCancelled: false,
     moduleHeader: "Bus departures",
     loadingMessage: "Loading departures…",
     noDeparturesMessage: "No upcoming bus departures",
@@ -103,7 +104,7 @@ Module.register("MMM-NTA-Ireland", {
 
   createDepartureRow(departure, index) {
     const row = document.createElement("tr")
-    row.className = "nta-departure"
+    row.className = departure.cancelled ? "nta-departure nta-cancelled" : "nta-departure"
 
     if (this.config.fade && this.config.fadePoint < 1) {
       const fadeIndex = Math.max(this.config.maxDepartures * this.config.fadePoint, 1)
@@ -146,6 +147,10 @@ Module.register("MMM-NTA-Ireland", {
   },
 
   formatDepartureTime(departure) {
+    if (departure.cancelled) {
+      return "Cancelled"
+    }
+
     if (!departure.realtimeTime) {
       return "–"
     }
