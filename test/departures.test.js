@@ -90,7 +90,7 @@ test("extractDepartures respects maxDepartures and departureWindowMinutes", () =
   assert.deepEqual(departures.map(departure => departure.route), ["1", "2"])
 })
 
-test("extractDepartures excludes skipped and cancelled departures", () => {
+test("extractDepartures excludes skipped and cancelled departures by default", () => {
   const feed = {
     entity: [
       createTrip("1", nowSeconds + 60, { scheduleRelationship: "SKIPPED" }),
@@ -102,6 +102,21 @@ test("extractDepartures excludes skipped and cancelled departures", () => {
   const departures = extractDepartures(feed, createConfig(), currentTime)
 
   assert.deepEqual(departures.map(departure => departure.route), ["3"])
+})
+
+test("extractDepartures includes skipped and cancelled departures when showCancelled is true", () => {
+  const feed = {
+    entity: [
+      createTrip("1", nowSeconds + 60, { scheduleRelationship: "SKIPPED" }),
+      createTrip("2", nowSeconds + 120, { schedule_relationship: "CANCELED" }),
+      createTrip("3", nowSeconds + 180),
+    ],
+  }
+
+  const departures = extractDepartures(feed, createConfig({ showCancelled: true }), currentTime)
+
+  assert.deepEqual(departures.map(departure => departure.route), ["1", "2", "3"])
+  assert.deepEqual(departures.map(departure => departure.cancelled), [true, true, false])
 })
 
 test("extractDepartures supports snake_case GTFS-Realtime JSON fields", () => {

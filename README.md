@@ -45,7 +45,8 @@ Add the module to the `modules` array in `config/config.js`:
       { id: "YOUR_STOP_CODE", name: "Home stop" }
     ],
     maxDepartures: 5,
-    refreshInterval: 60 * 1000
+    refreshInterval: 60 * 1000,
+    showCancelled: false
   }
 }
 ```
@@ -73,6 +74,7 @@ stops: ["YOUR_STOP_CODE"]
 | `showRoute` | `boolean` | `true` | Show the route ID column. |
 | `showDestination` | `boolean` | `true` | Show destination/headsign when present in the feed. |
 | `showDelay` | `boolean` | `true` | Append delay in minutes when the feed provides delay data. |
+| `showCancelled` | `boolean` | `false` | Include cancelled/skipped buses in the list. Cancelled rows are struck through and show `Cancelled` instead of a departure time. |
 | `fade` | `boolean` | `true` | Fade lower rows. |
 | `fadePoint` | `number` | `0.25` | Where the fade effect starts, as a fraction of `maxDepartures`. |
 | `loadingMessage` | `string` | `"Loading departures…"` | Message shown before the first response. |
