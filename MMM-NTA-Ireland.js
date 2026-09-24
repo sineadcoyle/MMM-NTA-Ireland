@@ -3,6 +3,7 @@ Module.register("MMM-NTA-Ireland", {
   defaults: {
     apiKey: "",
     apiUrl: "https://api.nationaltransport.ie/gtfsr/v2/gtfsr",
+    debug: false,
     stops: [],
     maxDepartures: 5,
     refreshInterval: 60 * 1000,
@@ -53,6 +54,7 @@ Module.register("MMM-NTA-Ireland", {
       this.loaded = true
       this.error = null
       this.departures = payload.departures || []
+      this.log(`Received ${this.departures.length} departures`)
       this.updateDom(this.config.animationSpeed)
       this.scheduleNextFetch()
     }
@@ -60,6 +62,7 @@ Module.register("MMM-NTA-Ireland", {
     if (notification === "NTA_ERROR") {
       this.loaded = true
       this.error = payload.message || this.config.errorMessage
+      console.error(`[MMM-NTA-Ireland] ${this.error}`)
       this.updateDom(this.config.animationSpeed)
       this.scheduleNextFetch()
     }
@@ -198,7 +201,14 @@ Module.register("MMM-NTA-Ireland", {
   },
 
   fetchDepartures() {
+    this.log("Requesting departure update")
     this.sendSocketNotification("NTA_FETCH_DEPARTURES")
+  },
+
+  log(message) {
+    if (this.config.debug) {
+      Log.info(`[MMM-NTA-Ireland] ${message}`)
+    }
   },
 
   scheduleNextFetch() {

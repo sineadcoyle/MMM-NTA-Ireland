@@ -41,6 +41,7 @@ Add the module to the `modules` array in `config/config.js`:
   position: "top_left",
   config: {
     apiKey: "YOUR_NTA_API_KEY",
+    debug: true,
     stops: [
       { id: "YOUR_STOP_CODE", name: "Home stop" }
     ],
@@ -63,6 +64,7 @@ stops: ["YOUR_STOP_CODE"]
 | --- | --- | --- | --- |
 | `apiKey` | `string` | `""` | Your NTA API key. Required. |
 | `apiUrl` | `string` | `"https://api.nationaltransport.ie/gtfsr/v2/gtfsr"` | NTA GTFS-Realtime API endpoint. |
+| `debug` | `boolean` | `false` | Log request, configuration, parsing, and notification details. The API response status and content type are always logged. |
 | `stops` | `array` | `[]` | Bus stop codes to show. Use strings or objects like `{ id: "STOP_CODE", name: "Home" }`. Required. |
 | `maxDepartures` | `number` | `5` | Maximum number of departures to display. |
 | `refreshInterval` | `number` | `60000` | How often to refresh the feed, in milliseconds. |
@@ -80,6 +82,12 @@ stops: ["YOUR_STOP_CODE"]
 | `loadingMessage` | `string` | `"Loading departures…"` | Message shown before the first response. |
 | `noDeparturesMessage` | `string` | `"No upcoming bus departures"` | Message shown when no matching departures are found. |
 | `errorMessage` | `string` | `"Unable to load bus departures"` | Generic fallback error message. |
+
+## Troubleshooting
+
+Set `debug: true` temporarily in the module configuration and restart MagicMirror. Check the MagicMirror terminal log for the configured stop count, API URL, HTTP status, response content type and size, feed entity count, and matching departure count. The API key itself is never logged.
+
+An HTTP error or parse error is sent to the module and shown in the module output. If the API request succeeds but `matchingDepartures=0`, check that the configured stop codes match the IDs in the NTA feed and that the departures fall within `departureWindowMinutes`.
 
 ## Notes on stop codes and bus-only data
 
