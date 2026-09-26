@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict")
 const test = require("node:test")
+const { getScheduledDeparture } = require("../lib/static-gtfs")
 const {
   cleanRouteId,
   extractDepartures,
@@ -143,6 +144,35 @@ test("extractDepartures supports snake_case GTFS-Realtime JSON fields", () => {
   assert.equal(departures[0].route, "39A")
   assert.equal(departures[0].destination, "UCD Belfield")
   assert.equal(departures[0].realtimeTime, nowSeconds + 300)
+})
+
+test("extractDepartures uses static schedule time plus realtime delay when time is missing", () => {
+  const feed = {
+    entity: [
+      {
+        trip_update: {
+          trip: { trip_id: "trip-1", route_id: "15" },
+          stop_time_update: [
+            {
+              stop_id: "8220B10001",
+              departure: { delay: 120 },
+            },
+          ],
+        },
+      },
+    ],
+  }
+  const staticTimes = new Map([
+    ["trip-1|8220B10001", { departureTime: "12:05:00", startDate: "20260101" }],
+  ])
+
+  const departures = extractDepartures(feed, createConfig(), currentTime, staticTimes)
+
+  const scheduledTime = getScheduledDeparture(staticTimes, "trip-1", "8220B10001", new Date(currentTime))
+  assert.equal(departures.length, 1)
+  assert.equal(departures[0].scheduledTime, scheduledTime)
+  assert.equal(departures[0].realtimeTime, scheduledTime + 120)
+  assert.equal(departures[0].delaySeconds, 120)
 })
 
 test("extractDepartures falls back to arrival when departure is missing", () => {
