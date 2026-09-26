@@ -43,7 +43,7 @@ Add the module to the `modules` array in `config/config.js`:
     apiKey: "YOUR_NTA_API_KEY",
     debug: true,
     stops: [
-      { id: "YOUR_STOP_CODE", name: "Home stop" }
+      { code: "YOUR_STOP_CODE", name: "Home stop" }
     ],
     maxDepartures: 5,
     refreshInterval: 60 * 1000,
@@ -58,14 +58,16 @@ You may also configure stops as strings if you do not want to show friendly name
 stops: ["YOUR_STOP_CODE"]
 ```
 
+The preferred configuration value is the human-readable `stop_code` from `stops.txt`. The module resolves it to the canonical `stop_id` from the static timetable before matching realtime updates. Explicit `{ id: "..." }` values remain supported.
+
 ### Configuration options
 
 | Option | Type | Default | Description |
 | --- | --- | --- | --- |
 | `apiKey` | `string` | `""` | Your NTA API key. Required. |
-| `apiUrl` | `string` | `"https://api.nationaltransport.ie/gtfsr/v2/gtfsr"` | NTA GTFS-Realtime API endpoint. |
+| `timetableRefreshInterval` | `number` | `86400000` | How often to refresh the static timetable, in milliseconds. The timetable is refreshed daily by default. |
 | `debug` | `boolean` | `false` | Log request, configuration, parsing, and notification details. The API response status and content type are always logged. |
-| `stops` | `array` | `[]` | Bus stop codes to show. Use strings or objects like `{ id: "STOP_CODE", name: "Home" }`. Required. |
+| `stops` | `array` | `[]` | Bus stop codes to show. Use strings or objects like `{ code: "STOP_CODE", name: "Home" }`. Required. The code is resolved to the realtime `stop_id` internally. |
 | `maxDepartures` | `number` | `5` | Maximum number of departures to display. |
 | `refreshInterval` | `number` | `60000` | How often to refresh the feed, in milliseconds. |
 | `departureWindowMinutes` | `number` | `120` | Only show departures within this many minutes. |
@@ -91,7 +93,7 @@ An HTTP error or parse error is sent to the module and shown in the module outpu
 
 ## Notes on stop codes and bus-only data
 
-The module filters the GTFS-Realtime feed by the configured stop codes. For the first version, it is intended for bus stop departures: configure bus stop codes and the display will show matching trip updates from the NTA feed.
+The module filters the GTFS-Realtime feed by the configured stop IDs. Static GTFS `stop_times.txt` supplies scheduled departure times when the realtime record only contains a delay; the realtime delay is then added to the scheduled time. Static GTFS data is cached in memory and refreshed daily by default.
 
 GTFS-Realtime trip update records do not always include a human-friendly destination or route short name. When the feed does not provide those fields, the module falls back to the route ID and configured stop name.
 

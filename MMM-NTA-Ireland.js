@@ -2,7 +2,7 @@ Module.register("MMM-NTA-Ireland", {
 
   defaults: {
     apiKey: "",
-    apiUrl: "https://api.nationaltransport.ie/gtfsr/v2/gtfsr",
+    timetableRefreshInterval: 24 * 60 * 60 * 1000,
     debug: false,
     stops: [],
     maxDepartures: 5,
