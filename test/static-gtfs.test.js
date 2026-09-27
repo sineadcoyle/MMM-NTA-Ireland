@@ -6,6 +6,7 @@ const test = require("node:test")
 const {
   getScheduledDeparture,
   getScheduleKey,
+  getStaticDepartures,
   loadStaticGtfs,
   parseCsv,
 } = require("../lib/static-gtfs")
@@ -63,6 +64,36 @@ test("getScheduledDeparture supports GTFS times after midnight", () => {
   )
 
   assert.equal(departure, new Date("2026-01-02T00:15:00").getTime() / 1000)
+})
+
+test("getStaticDepartures returns scheduled trips without realtime data", () => {
+  const currentTime = new Date("2026-01-01T12:00:00").getTime()
+  const staticGtfs = {
+    calendar: [],
+    calendarDates: [],
+    scheduledDeparturesByStop: new Map([
+      ["7010B158131", [{
+        tripId: "trip-1",
+        stopId: "7010B158131",
+        departureTime: "12:05:00",
+        serviceId: "weekday",
+        route: "46A",
+        destination: "Derry",
+      }]],
+    ]),
+  }
+
+  assert.deepEqual(getStaticDepartures(staticGtfs, new Set(["7010B158131"]), currentTime, 60), [{
+    cancelled: false,
+    destination: "Derry",
+    delaySeconds: 0,
+    realtimeTime: currentTime / 1000 + 300,
+    route: "46A",
+    scheduledTime: currentTime / 1000 + 300,
+    status: "scheduled",
+    stopId: "7010B158131",
+    tripId: "trip-1",
+  }])
 })
 
 test("getScheduledDeparture returns null for an unknown trip and stop", () => {

@@ -168,11 +168,13 @@ Module.register("MMM-NTA-Ireland", {
     const diffMinutes = Math.max(Math.round(((departure.realtimeTime * 1000) - Date.now()) / 60000), 0)
     const delay = this.formatDelay(departure.delaySeconds)
 
+    const scheduled = departure.status === "scheduled" ? " · Scheduled" : ""
+
     if (diffMinutes === 0) {
-      return `Due${delay}`
+      return `Due${delay}${scheduled}`
     }
 
-    return `${diffMinutes} min${delay}`
+    return `${diffMinutes} min${delay}${scheduled}`
   },
 
   formatDelay(delaySeconds) {
