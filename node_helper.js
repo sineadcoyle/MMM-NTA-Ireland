@@ -45,7 +45,7 @@ module.exports = NodeHelper.create({
       const entityCount = Array.isArray(feed.entity)
         ? feed.entity.length
         : Array.isArray(feed.entities) ? feed.entities.length : 0
-      const departures = extractDepartures(feed, config, Date.now(), staticGtfs.scheduledTimes)
+      const departures = extractDepartures(feed, config, Date.now(), staticGtfs.scheduledTimes, staticGtfs)
 
       this.log(`Feed parsed: entities=${entityCount}, matchingDepartures=${departures.length}`)
       this.sendSocketNotification("NTA_DEPARTURES", { departures })

@@ -93,7 +93,7 @@ An HTTP error or parse error is sent to the module and shown in the module outpu
 
 ## Notes on stop codes and bus-only data
 
-The module filters the GTFS-Realtime feed by the configured stop IDs. Static GTFS `stop_times.txt` supplies scheduled departure times when the realtime record only contains a delay; the realtime delay is then added to the scheduled time. Static GTFS data is cached in memory and refreshed daily by default.
+The module filters the GTFS-Realtime feed by the configured stop IDs. Static GTFS `stop_times.txt` supplies scheduled departure times when the realtime record only contains a delay; the realtime delay is then added to the scheduled time. If no realtime update exists for an upcoming trip, the static departure is still shown with a `Scheduled` status. Static GTFS data is cached in memory and refreshed daily by default.
 
 GTFS-Realtime trip update records do not always include a human-friendly destination or route short name. When the feed does not provide those fields, the module falls back to the route ID and configured stop name.
 
