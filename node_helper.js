@@ -1,17 +1,17 @@
 const fs = require("fs")
-const os = require("os")
 const path = require("path")
 const https = require("https")
 const { execFile } = require("child_process")
 const { promisify } = require("util")
 const NodeHelper = require("node_helper")
 const { extractDepartures } = require("./lib/departures")
+const { selectStaticGtfsArchiveEntries } = require("./lib/static-gtfs-archive")
 const { loadStaticGtfs } = require("./lib/static-gtfs")
 
 const execFileAsync = promisify(execFile)
 
 const REALTIME_API_URL = "https://api.nationaltransport.ie/gtfsr/v2/gtfsr"
-const STATIC_GTFS_URL = "https://www.transportforireland.ie/transitData/google_transit.zip"
+const STATIC_GTFS_URL = "https://www.transportforireland.ie/transitData/Data/GTFS_All.zip"
 
 module.exports = NodeHelper.create({
 
@@ -19,6 +19,7 @@ module.exports = NodeHelper.create({
     this.config = null
     this.staticGtfs = null
     this.staticGtfsLoadedAt = 0
+    this.staticGtfsLoadPromise = null
   },
 
   async socketNotificationReceived(notification, payload) {
@@ -75,12 +76,25 @@ module.exports = NodeHelper.create({
       return this.staticGtfs
     }
 
-    const temporaryDirectory = await fs.promises.mkdtemp(path.join(os.tmpdir(), "mmm-nta-gtfs-"))
+    if (!this.staticGtfsLoadPromise) {
+      this.staticGtfsLoadPromise = this.loadStaticGtfsFromDownload()
+        .finally(() => {
+          this.staticGtfsLoadPromise = null
+        })
+    }
+
+    return this.staticGtfsLoadPromise
+  },
+
+  async loadStaticGtfsFromDownload() {
+    const cacheDirectory = path.join(__dirname, ".cache")
+    await fs.promises.mkdir(cacheDirectory, { recursive: true })
+    const temporaryDirectory = await fs.promises.mkdtemp(path.join(cacheDirectory, "gtfs-"))
 
     try {
       const archivePath = path.join(temporaryDirectory, "static-gtfs.zip")
       await this.downloadFile(STATIC_GTFS_URL, archivePath)
-      await execFileAsync("unzip", ["-o", "-q", archivePath, "-d", temporaryDirectory])
+      await this.extractStaticGtfsArchive(archivePath, temporaryDirectory)
 
       this.staticGtfs = loadStaticGtfs(temporaryDirectory)
       this.staticGtfsLoadedAt = Date.now()
@@ -91,6 +105,14 @@ module.exports = NodeHelper.create({
         await fs.promises.rm(temporaryDirectory, { recursive: true, force: true })
       }
     }
+  },
+
+  async extractStaticGtfsArchive(archivePath, destination) {
+    const { stdout } = await execFileAsync("unzip", ["-Z", "-1", archivePath])
+    const archiveEntries = stdout.split(/\r?\n/).filter(Boolean)
+    const entriesToExtract = selectStaticGtfsArchiveEntries(archiveEntries)
+
+    await execFileAsync("unzip", ["-j", "-o", "-q", archivePath, ...entriesToExtract, "-d", destination])
   },
 
   downloadFile(fileUrl, destination, redirectCount = 0) {
