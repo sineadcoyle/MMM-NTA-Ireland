@@ -11,7 +11,7 @@ const { loadStaticGtfs } = require("./lib/static-gtfs")
 const execFileAsync = promisify(execFile)
 
 const REALTIME_API_URL = "https://api.nationaltransport.ie/gtfsr/v2/gtfsr"
-const STATIC_GTFS_URL = "https://www.transportforireland.ie/transitData/google_transit.zip"
+const STATIC_GTFS_URL = "https://www.transportforireland.ie/transitData/Data/GTFS_All.zip"
 
 module.exports = NodeHelper.create({
 
