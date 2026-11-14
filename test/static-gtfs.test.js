@@ -20,17 +20,30 @@ test("parseCsv supports headers, quoted commas, and escaped quotes", () => {
   ])
 })
 
-test("loadStaticGtfs maps stop codes and indexes trip stop times", () => {
+test("loadStaticGtfs maps stop codes and indexes trip stop times", async () => {
   const directory = createGtfsFixture()
 
   try {
-    const gtfs = loadStaticGtfs(directory)
+    const gtfs = await loadStaticGtfs(directory)
 
     assert.equal(gtfs.stopCodeToId.get("158131"), "7010B158131")
     assert.deepEqual(gtfs.scheduledTimes.get(getScheduleKey("trip-1", "7010B158131")), {
       departureTime: "12:05:00",
       startDate: "",
     })
+  } finally {
+    fs.rmSync(directory, { recursive: true, force: true })
+  }
+})
+
+test("loadStaticGtfs streams stop times and filters configured stops", async () => {
+  const directory = createGtfsFixture()
+
+  try {
+    const gtfs = await loadStaticGtfs(directory, [{ code: "158131" }])
+
+    assert.equal(gtfs.scheduledTimes.size, 1)
+    assert.equal(gtfs.scheduledDeparturesByStop.get("7010B158131").length, 1)
   } finally {
     fs.rmSync(directory, { recursive: true, force: true })
   }
