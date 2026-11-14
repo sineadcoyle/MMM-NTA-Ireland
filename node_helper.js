@@ -96,7 +96,7 @@ module.exports = NodeHelper.create({
       await this.downloadFile(STATIC_GTFS_URL, archivePath)
       await this.extractStaticGtfsArchive(archivePath, temporaryDirectory)
 
-      this.staticGtfs = loadStaticGtfs(temporaryDirectory)
+      this.staticGtfs = await loadStaticGtfs(temporaryDirectory, this.config.stops)
       this.staticGtfsLoadedAt = Date.now()
       this.log(`Static GTFS loaded: trip/stop schedules=${this.staticGtfs.scheduledTimes.size}, stop codes=${this.staticGtfs.stopCodeToId.size}`)
       return this.staticGtfs
