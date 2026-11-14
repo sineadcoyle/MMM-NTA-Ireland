@@ -16,6 +16,7 @@ Module.register("MMM-NTA-Ireland", {
     showDestination: true,
     showDelay: true,
     showCancelled: false,
+    includeNoPickup: false,
     moduleHeader: "Bus departures",
     loadingMessage: "Loading departures…",
     noDeparturesMessage: "No upcoming bus departures",
