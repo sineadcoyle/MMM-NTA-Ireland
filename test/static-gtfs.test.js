@@ -29,8 +29,10 @@ test("loadStaticGtfs maps stop codes and indexes trip stop times", async () => {
     assert.equal(gtfs.stopCodeToId.get("158131"), "7010B158131")
     assert.deepEqual(gtfs.scheduledTimes.get(getScheduleKey("trip-1", "7010B158131")), {
       departureTime: "12:05:00",
+      pickupType: "0",
       startDate: "",
     })
+    assert.equal(gtfs.routeShortNameById.get("46A"), "46A")
   } finally {
     fs.rmSync(directory, { recursive: true, force: true })
   }
@@ -104,6 +106,7 @@ test("getStaticDepartures returns scheduled trips without realtime data", () => 
     route: "46A",
     scheduledTime: currentTime / 1000 + 300,
     status: "scheduled",
+    pickupType: "0",
     stopId: "7010B158131",
     tripId: "trip-1",
   }])
@@ -126,6 +129,10 @@ function createGtfsFixture() {
   fs.writeFileSync(path.join(directory, "trips.txt"), [
     "route_id,service_id,trip_id",
     "46A,weekday,trip-1",
+  ].join("\n"))
+  fs.writeFileSync(path.join(directory, "routes.txt"), [
+    "route_id,route_short_name,route_long_name",
+    "46A,46A,Derry to Town",
   ].join("\n"))
   fs.writeFileSync(path.join(directory, "stop_times.txt"), [
     "trip_id,arrival_time,departure_time,stop_id,stop_sequence",

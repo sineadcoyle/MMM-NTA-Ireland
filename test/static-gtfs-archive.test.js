@@ -22,6 +22,7 @@ test("selectStaticGtfsArchiveEntries extracts only required and supported option
     "stop_times.txt",
     "calendar.txt",
     "calendar_dates.txt",
+    "routes.txt",
   ])
 })
 

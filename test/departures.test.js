@@ -72,6 +72,46 @@ test("extractDepartures filters by configured stops and sorts by realtime time",
   assert.equal(departures[1].delaySeconds, 60)
 })
 
+test("extractDepartures excludes static no-pickup departures by default", () => {
+  const feed = {
+    entity: [
+      createTrip("1", nowSeconds + 60, { stopHeadsign: "Drop Off" }),
+      createTrip("2", nowSeconds + 120, { stopHeadsign: "Ballywaltrim" }),
+    ],
+  }
+  const staticGtfs = {
+    calendar: [],
+    calendarDates: [],
+    scheduledDeparturesByStop: new Map([
+      ["8220B10001", [
+        { tripId: "1", stopId: "8220B10001", pickupType: "1", departureTime: "12:01:00", serviceId: "weekday", destination: "Drop Off" },
+        { tripId: "2", stopId: "8220B10001", pickupType: "0", departureTime: "12:02:00", serviceId: "weekday", destination: "Ballywaltrim" },
+      ]],
+    ]),
+  }
+
+  const departures = extractDepartures(feed, createConfig(), currentTime, new Map(), staticGtfs)
+
+  assert.deepEqual(departures.map(departure => departure.destination), ["Ballywaltrim"])
+})
+
+test("extractDepartures can include static no-pickup departures", () => {
+  const feed = {
+    entity: [createTrip("1", nowSeconds + 60, { stopHeadsign: "Drop Off" })],
+  }
+  const staticGtfs = {
+    calendar: [],
+    calendarDates: [],
+    scheduledDeparturesByStop: new Map([
+      ["8220B10001", [{ tripId: "1", stopId: "8220B10001", pickupType: "1", departureTime: "12:01:00", serviceId: "weekday", destination: "Drop Off" }]],
+    ]),
+  }
+
+  const departures = extractDepartures(feed, createConfig({ includeNoPickup: true }), currentTime, new Map(), staticGtfs)
+
+  assert.equal(departures[0].destination, "Drop Off")
+})
+
 test("extractDepartures respects maxDepartures and departureWindowMinutes", () => {
   const feed = {
     entity: [
@@ -236,7 +276,7 @@ test("isCancelled recognises cancellation relationships", () => {
 function createTrip(routeId, time, stopTimeUpdateOverrides = {}) {
   return {
     tripUpdate: {
-      trip: { routeId },
+      trip: { routeId, tripId: routeId },
       stopTimeUpdate: [
         {
           stopId: "8220B10001",
